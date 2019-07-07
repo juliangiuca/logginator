@@ -13,8 +13,19 @@ app.use(morgan('combined'))
 
 app.get('/', (req, res) => {
   let targetUrl = req.query.url;
-  const myURL = new URL(targetUrl);
 
+  setTimeout(() => {
+    hitWebsite(targetUrl)
+  }, 500)
+
+  res.send(`completed request for ${targetUrl}`)
+
+})
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+function hitWebsite(targetUrl) {
+  const myURL = new URL(targetUrl);
   (async () => {
     console.log('triggering request for', targetUrl)
 
@@ -24,7 +35,7 @@ app.get('/', (req, res) => {
     console.log('spinning up chrome for', targetUrl)
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto(targetUrl);
+    await page.goto(targetUrl, {waitUntil: 'load', timeout: 10000});
     let img = await page.screenshot({fullPage: true});
     console.log('got screenshot for', targetUrl)
 
@@ -40,10 +51,5 @@ app.get('/', (req, res) => {
     });
 
     await browser.close();
-    await res.send(`completed request for ${targetUrl}`)
   })();
-
-  
-})
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+}

@@ -13,7 +13,8 @@ module.exports = {
     max_memory_restart: '1G',
     exec_mode : "cluster",
     env: {
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      PORT: 4000
     },
     env_production: {
       NODE_ENV: 'production',

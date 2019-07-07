@@ -1,9 +1,7 @@
 const express = require('express')
 const puppeteer = require('puppeteer');
 var morgan = require('morgan')
-const url = require('url')
-
-
+const URL = require('url').Url;
 
 const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-east-1'});

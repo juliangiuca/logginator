@@ -9,7 +9,7 @@ const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-east-1'});
 const s3 = new AWS.S3();
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.use(morgan('combined'))
 

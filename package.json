@@ -13,5 +13,8 @@
     "express": "^4.17.1",
     "morgan": "^1.9.1",
     "puppeteer": "^1.18.1"
+  },
+  "devDependencies": {
+    "pm2": "^3.5.1"
   }
 }

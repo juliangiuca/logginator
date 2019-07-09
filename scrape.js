@@ -14,9 +14,7 @@ app.use(morgan('combined'))
 app.get('/', (req, res) => {
   let targetUrl = req.query.url;
 
-  setTimeout(() => {
-    hitWebsite(targetUrl)
-  }, 500)
+  hitWebsite(targetUrl)
 
   res.send(`completed request for ${targetUrl}`)
 
@@ -26,30 +24,35 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 function hitWebsite(targetUrl) {
   const myURL = new URL(targetUrl);
-  (async () => {
-    console.log('triggering request for', targetUrl)
+  console.log('triggering request for', targetUrl)
 
-    var timeInMs = Date.now();
-    let name = `${timeInMs}-${myURL.host}.png`
+  var timeInMs = Date.now();
+  let name = `${timeInMs}-${myURL.host}.png`
 
-    console.log('spinning up chrome for', targetUrl)
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(targetUrl, {waitUntil: 'load', timeout: 10000});
-    let img = await page.screenshot({fullPage: true});
-    console.log('got screenshot for', targetUrl)
+  console.log('spinning up chrome for', targetUrl)
 
-    var params = {
-      Body: img,
-      Bucket: "logginator",
-      Key: name
-    };
+  puppeteer.launch().then(browser => {
+  browser.newPage()
+    .then(page => {
+      page.goto(targetUrl, {waitUntil: 'load', timeout: 10000})
+        .then(resp   => page.screenshot({fullPage: true}))
+        .then(buffer => upload({ Body: buffer, Bucket: "logginator", Key: name }))
+        .then(() => browser.close())
+        .catch((err) => {
+            console.error('something went wrong', err)
+        })
+    });
+  });
+
+}
+
+let upload = (params) => {
+  return new Promise((resolve, reject) => {
+    console.log('uploading to s3')
 
     s3.putObject(params, function(err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else     console.log(data);           // successful response
+      if (err) reject(err, err.stack); // an error occurred
+      else     resolve(data);           // successful response
     });
-
-    await browser.close();
-  })();
+  })
 }

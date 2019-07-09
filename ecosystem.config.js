@@ -1,13 +1,32 @@
 module.exports = {
-  apps : [{
+  apps : [
+  {
     name: 'scrape',
     script: 'scrape.js',
-
-    // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    error_file: './logs/err.log',
-    out_file: './logs/out.log',
+    error_file: './logs/scrape-err.log',
+    out_file: './logs/scrape-out.log',
     time: true,
-    instances: 4,
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '2G',
+    exec_mode : "cluster",
+    env: {
+      NODE_ENV: 'development',
+      PORT: 4000
+    },
+    env_production: {
+      NODE_ENV: 'production',
+      PORT: 4000
+    }
+  },
+  {
+    name: 'noiseMaker',
+    script: 'noiseMaker.js',
+    error_file: './logs/noise-maker-err.log',
+    out_file: './logs/noise-maker-out.log',
+    time: true,
+    instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
@@ -20,5 +39,6 @@ module.exports = {
       NODE_ENV: 'production',
       PORT: 4000
     }
-  }]
+  },
+  ]
 };

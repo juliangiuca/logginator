@@ -1,7 +1,7 @@
 const fs = require('fs');
 const gigs_per_hour = process.env.GIGS_PER_HOUR || 1
+const destination = process.env.DESTINATION || './destination'
 let mbs_an_hour = gigs_per_hour * 1000
-
 
 fs.readdirSync('./fixtures').forEach((file) => {
   let log = fs.readFileSync(`./fixtures/${file}`, 'utf-8')
@@ -23,7 +23,7 @@ fs.readdirSync('./fixtures').forEach((file) => {
   setInterval(() => {
     let section = counter * logs_lines_per_interval;
     for (let i=section; i<logs_lines_per_interval; i++) {
-      fs.writeFile(file, logs[i % logs.length], {flag: 'a+'}, (err) => {
+      fs.writeFile(`${destination}/${file}`, logs[i % logs.length], {flag: 'a+'}, (err) => {
         if (err) console.error(`file ${file} has thrown ${err}`)
       })
     }

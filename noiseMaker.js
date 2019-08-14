@@ -46,7 +46,7 @@ fs.readdirSync('./fixtures').forEach((file) => {
 
       tempLogLine = tempLogLine.replace(re, `[${day}/${month}/${year}:${time} +0000]`)
 
-      fs.writeFile(`${destination}/${file}`, tempLogLine, {flag: 'a+'}, (err) => {
+      fs.writeFile(`${destination}/${file}`, `${tempLogLine}\n`, {flag: 'a+'}, (err) => {
         if (err) console.error(`file ${file} has thrown ${err}`)
       })
     }

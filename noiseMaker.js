@@ -3,6 +3,8 @@ const gigs_per_hour = process.env.GIGS_PER_HOUR || 1
 const destination = process.env.DESTINATION || './destination'
 let mbs_an_hour = gigs_per_hour * 1000
 
+const dateIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 fs.readdirSync('./fixtures').forEach((file) => {
   let log = fs.readFileSync(`./fixtures/${file}`, 'utf-8')
   let logs = log.split('\n')
@@ -23,7 +25,28 @@ fs.readdirSync('./fixtures').forEach((file) => {
   setInterval(() => {
     let section = counter * logs_lines_per_interval;
     for (let i=section; i<logs_lines_per_interval; i++) {
-      fs.writeFile(`${destination}/${file}`, logs[i % logs.length], {flag: 'a+'}, (err) => {
+      let tempLogLine = logs[i % logs.length]
+      let re = /\[([\w:/]+\s[+\-]\d{4})\]/
+      let date = new Date();
+
+      let day   = date.getDate();
+      let month = dateIndex[date.getMonth()]
+      let year  = date.getFullYear()
+
+      let hours = date.getHours()
+      if (hours < 10) hours = `0${hours}`
+
+      let minutes = date.getMinutes();
+      if (minutes < 10) minutes = `0${minutes}`
+
+      let seconds = date.getSeconds()
+      if (seconds < 10) seconds = `0${seconds}`
+
+      let time = `${hours}:${minutes}:${seconds}`
+
+      tempLogLine = tempLogLine.replace(re, `[${day}/${month}/${year}:${time} +0000]`)
+
+      fs.writeFile(`${destination}/${file}`, tempLogLine, {flag: 'a+'}, (err) => {
         if (err) console.error(`file ${file} has thrown ${err}`)
       })
     }
